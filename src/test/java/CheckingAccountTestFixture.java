@@ -56,6 +56,8 @@ public class CheckingAccountTestFixture {
             // set up account with specified starting balance
             CheckingAccount ca = new CheckingAccount(
                     "test "+testNum, -1, scenario.initBalance, 0, -1);
+            ca.setMinimumBalance(100d);
+            ca.setBelowMinimumFee(10d);
 
             // now process checks, withdrawals, deposits
             for (double checkAmount : scenario.checks) {
@@ -114,9 +116,10 @@ public class CheckingAccountTestFixture {
         List<Double> checks = parseListOfAmounts(scenarioValues[1]);
         List<Double> wds = parseListOfAmounts(scenarioValues[2]);
         List<Double> deps = parseListOfAmounts(scenarioValues[3]);
-        double finalBalance = Double.parseDouble(scenarioValues[4]);
+        boolean runMonthEndFee = Boolean.parseBoolean(scenarioValues[4].trim());
+        double finalBalance = Double.parseDouble(scenarioValues[5]);
         TestScenario scenario = new TestScenario(
-                initialBalance, checks, wds, deps, false, finalBalance
+                initialBalance, checks, wds, deps, runMonthEndFee, finalBalance
         );
         return scenario;
     }
@@ -154,10 +157,10 @@ public class CheckingAccountTestFixture {
         // Same scenarios as above plus one more to verify it's running these string scenarios
         System.out.println("\n\n****** FROM STRINGS ******\n");
         List<String> scenarioStrings = List.of(
-                "0, , , 10|20, 30",
-                "100, , , , 100",
-                "100, 10, , , 90",
-                "100, 10|20, , 10, 80"
+                "0, , , 10|20,, 30",
+                "100, , , ,, 100",
+                "100, 10, , ,, 90",
+                "100, 10|20, , 10, ,80"
         );
         List<TestScenario> parsedScenarios = parseScenarioStrings(scenarioStrings);
         testScenarios = parsedScenarios;
