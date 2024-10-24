@@ -59,6 +59,8 @@ public class SavingsAccountTestFixture {
             // TODO: Add code to create account....
             SavingsAccount sa = new SavingsAccount();
             sa.deposit(scenario.initBalance);
+            sa.setMinimumBalance(100);
+            sa.setBelowMinimumFee(10);
 
             for (double withdrawalAmount : scenario.withdrawals) {
                 sa.withdraw(withdrawalAmount);
