@@ -155,25 +155,28 @@ public class CheckingAccountTestFixture {
         // note we left out runMonthEnd from our file format
 
         // Same scenarios as above plus one more to verify it's running these string scenarios
-        System.out.println("\n\n****** FROM STRINGS ******\n");
-        List<String> scenarioStrings = List.of(
-                "0, , , 10|20,, 30",
-                "100, , , ,, 100",
-                "100, 10, , ,, 90",
-                "100, 10|20, , 10, ,80"
-        );
         List<TestScenario> parsedScenarios = parseScenarioStrings(scenarioStrings);
         testScenarios = parsedScenarios;
         runJunitTests();
 
-        // ...or populate with scenarios from a CSV file...
-        // now load these same scenarios from a file plus one more
-        System.out.println("\n\n****** FROM FILE ******\n");
-        // We could get the filename from the cmdline, e.g. "-f CheckingAccountScenarios.csv"
-        if(args.length > 0) { TEST_FILE = "src/test/resources/" + args[0]; }
-        List<String> scenarioStringsFromFile = Files
-                .readAllLines(Paths.get(TEST_FILE.replace('/', File.separatorChar)));
-        testScenarios = parseScenarioStrings(scenarioStringsFromFile);
+        List<String> scenarioStrings = new ArrayList<>();
+        if(args.length > 0) {
+            if(args.length > 2) {
+                throw new Exception("This command does not except more than two arguments. Usage: {-l **csv structured test parameters**}\nOr: {**filename**}");
+            }
+            if(args[0].equals("-l")) {
+                scenarioStrings.add(args[1]);
+            } else if (args.length == 1){
+                TEST_FILE = "src/test/resources/" + args[0];
+                scenarioStrings = Files.readAllLines(Paths.get(TEST_FILE));
+            } else {
+                throw new Exception("These are invalid arguments.  Usage: {-l **csv structured test parameters**}\n" + //
+                                        "Or: {**filename**}");
+            }
+        } else {
+            scenarioStrings = Files.readAllLines(Paths.get(TEST_FILE));
+        }
+        testScenarios = parseScenarioStrings(scenarioStrings);
         runJunitTests();
 
         // ...or, we could also specify a single scenario on the command line,

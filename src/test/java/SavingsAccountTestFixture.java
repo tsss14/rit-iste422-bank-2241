@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 public class SavingsAccountTestFixture {
     public static Logger logger = LogManager.getLogger(SavingsAccountTestFixture.class);
     // Note that we could also load the file from the classpath instead of hardcoding the pathname
-    static final String TEST_FILE = "src/test/resources/SavingsAccountTest.csv".replace('/', File.separatorChar);
+    static String TEST_FILE = "src/test/resources/SavingsAccountTest.csv".replace('/', File.separatorChar);
 
     record TestScenario(double initBalance,
                         double interestRate,
@@ -137,25 +137,28 @@ public class SavingsAccountTestFixture {
         return scenarios;
     }
 
-    public static void main(String [] args) throws IOException {
+    public static void main(String [] args) throws Exception {
         System.out.println("START TESTING");
-            // if populating with scenarios from a CSV file...
-            // TODO: We could get the filename from the cmdline, e.g. "-f CheckingAccountScenarios.csv"
-        System.out.println("\n\n****** FROM FILE ******\n");
-            // TODO: get filename from cmdline and use instead of TEST_FILE constant
-        List<String> scenarioStringsFromFile = Files.readAllLines(Paths.get(TEST_FILE));
+        List<String> scenarioStrings = new ArrayList<>();
+        if(args.length > 0) {
+            if(args.length > 2) {
+                throw new Exception("This command does not except more than two arguments. Usage: {-l **csv structured test parameters**}\nOr: {**filename**}");
+            }
+            if(args[0].equals("-l")) {
+                scenarioStrings.add(args[1]);
+            } else if (args.length == 1){
+                TEST_FILE = "src/test/resources/" + args[0];
+                scenarioStrings = Files.readAllLines(Paths.get(TEST_FILE));
+            } else {
+                throw new Exception("These are invalid arguments.  Usage: {-l **csv structured test parameters**}\n" + //
+                                        "Or: {**filename**}");
+            }
+        } else {
+            scenarioStrings = Files.readAllLines(Paths.get(TEST_FILE));
+        }
         // Note: toArray converts from a List to an array
-        testScenarios = parseScenarioStrings(scenarioStringsFromFile);
+        testScenarios = parseScenarioStrings(scenarioStrings);
         runJunitTests();
-        // else {
-        //     // if specifying a scenario on the command line,
-        //     // for example "-t '10, 20|20, , 40|10, 0'"
-        //     // Note the single-quotes above ^^^ because of the embedded spaces and the pipe symbol
-        //     System.out.println("Command-line arguments passed in: " + java.util.Arrays.asList(args));
-        //     // TODO: write the code to "parse" scenario into a suitable string
-        //     // TODO: get TestScenario object from above string and store to testScenarios static var
-        //     runJunitTests();
-        // }
         System.out.println("DONE");
     }
 }
