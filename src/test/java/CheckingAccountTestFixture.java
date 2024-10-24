@@ -170,7 +170,7 @@ public class CheckingAccountTestFixture {
         // now load these same scenarios from a file plus one more
         System.out.println("\n\n****** FROM FILE ******\n");
         // We could get the filename from the cmdline, e.g. "-f CheckingAccountScenarios.csv"
-        if(args[0] != null) { TEST_FILE = "src/test/resources/" + args[0]; }
+        if(args.length > 0) { TEST_FILE = "src/test/resources/" + args[0]; }
         List<String> scenarioStringsFromFile = Files
                 .readAllLines(Paths.get(TEST_FILE.replace('/', File.separatorChar)));
         testScenarios = parseScenarioStrings(scenarioStringsFromFile);
