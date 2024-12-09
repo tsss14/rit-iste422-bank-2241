@@ -10,6 +10,7 @@ public class Bank {
     private Map<Long, Owner> owners = new TreeMap<>();
     private Map<Long, Account> accounts = new TreeMap<>();
     private Register register = new Register();
+    private Obfuscator ob = new Obfuscator();
 
     public Bank() {
         // All accounts share a single unified register so we only
@@ -86,6 +87,7 @@ public class Bank {
             register.addRegisterEntry(rec);
         }
         logger.info("Loaded {} Accounts", accounts.size());
+        ob.loadData();
         return owners.size() + accounts.size() + register.getEntries().size();
     }
 
@@ -96,6 +98,7 @@ public class Bank {
         int savingsCount = Persister.writeRecordsToCsv(splitAccounts.get(SavingsAccount.class), "savings");
         int checkingCount = Persister.writeRecordsToCsv(splitAccounts.get(CheckingAccount.class),"checking");
         int registerCount = Persister.writeRecordsToCsv(register.getEntries(),"register");
+        ob.obfuscate();
         return ownerCount + savingsCount + checkingCount + registerCount;
     }
 
